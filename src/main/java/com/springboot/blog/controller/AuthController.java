@@ -4,6 +4,7 @@ import com.springboot.blog.payload.JwtAuthResponse;
 import com.springboot.blog.payload.LoginDTO;
 import com.springboot.blog.payload.RegisterDTO;
 import com.springboot.blog.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,17 +21,28 @@ public class AuthController {
     }
 
     @PostMapping(value = {"/login", "/signin"})
-    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDTO loginDTO){
-        String token = authService.login(loginDTO);
+    public ResponseEntity<JwtAuthResponse> login(@Valid @RequestBody LoginDTO loginDTO){
+        try {
+            String token = authService.login(loginDTO);
 
-        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
-        jwtAuthResponse.setAccessToken(token);
+            JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+            jwtAuthResponse.setAccessToken(token);
 
-        return ResponseEntity.ok(jwtAuthResponse);
+            return ResponseEntity.ok(jwtAuthResponse);
+        }
+        catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
+
     @PostMapping(value = {"/register", "/signup"})
-    public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO){
-        String response = authService.register(registerDTO);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterDTO registerDTO){
+        try {
+            String response = authService.register(registerDTO);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
+        catch (RuntimeException ex){
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
     }
 }
