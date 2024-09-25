@@ -13,7 +13,7 @@ public class CommentDTO {
     private String name;
 
     @NotEmpty(message = "Email should not be null or empty")
-    @Email
+    @Email(message = "Please provide a valid email address")
     private String email;
 
     @NotEmpty
