@@ -100,6 +100,12 @@ public class PostServiceImpl implements PostService {
 
     }
 
+    @Override
+    public List<PostDTO> searchPost(String keyword) {
+        List<Post> searchPost = postRepository.searchPost(keyword);
+        return searchPost.stream().map((post) -> mapToDTO(post)).collect(Collectors.toList());
+    }
+
     private PostDTO mapToDTO(Post post){
         PostDTO postDTO = mapper.map(post,PostDTO.class);
         return postDTO;
